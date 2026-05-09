@@ -1,152 +1,199 @@
+
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import {
+import { 
+  Rocket, 
+  Download, 
+  Layout, 
+  Sparkles, 
+  Globe, 
   ArrowRight,
-  Globe2,
-  Layout,
-  Rocket,
   ShieldCheck,
-  Sparkles,
+  Zap,
+  Palette,
+  Terminal,
+  Grid,
+  Layers,
+  Cpu
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
-export default function LandingPage() {
+export default function MarketingPage() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
+
   return (
-    <div className="flex min-h-screen flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-      {/* Subtle Background Glow */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] left-1/2 -translate-x-1/2 h-[40%] w-[70%] rounded-full bg-indigo-50 blur-[120px] dark:bg-indigo-900/10" />
+    <div ref={containerRef} className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500 overflow-hidden">
+      {/* Immersive Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-[-10%] left-[-10%] h-[60%] w-[60%] rounded-full bg-indigo-600/10 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] rounded-full bg-purple-600/10 blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
       </div>
 
-      {/* Clean Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-50">
-              <Sparkles className="h-5 w-5 text-white dark:text-slate-900" />
+      <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-2xl">
+        <div className="container mx-auto flex h-20 items-center justify-between px-8">
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
+               <Logo className="h-6 w-6 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight">Legacy</span>
-          </Link>
-          
-          <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="text-sm font-medium">Sign In</Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-200">
-                Get Started
-              </Button>
-            </Link>
+            <span className="text-2xl font-black tracking-tighter uppercase italic">Legacy<span className="text-indigo-500">Studio</span></span>
           </div>
+          <nav className="hidden md:flex gap-12 text-[11px] font-bold uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-opacity">
+              <a href="#features" className="hover:text-indigo-400">Architecture</a>
+              <a href="#templates" className="hover:text-indigo-400">Library</a>
+          </nav>
+          <Link href="/templates">
+            <Button className="bg-white text-black rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+              Build Legacy
+            </Button>
+          </Link>
         </div>
       </header>
 
-      <main className="flex-1">
+      <main>
         {/* Hero Section */}
-        <section className="px-4 pt-24 pb-16 text-center sm:pt-32 sm:pb-24">
+        <section className="relative container mx-auto px-8 pt-60 pb-40">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto max-w-4xl"
+            style={{ opacity, scale }}
+            className="text-center space-y-10 max-w-6xl mx-auto"
           >
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-              Showcase your work <br />
-              <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">with style.</span>
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em]">
+               <Sparkles className="h-3 w-3" /> System Update: 6 Designer Architectures Live
+            </div>
+            <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.8] uppercase italic">
+               Deploy your <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">Digital Soul.</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500 dark:text-slate-400 sm:text-xl">
-              The easiest way to create a professional, high-performance portfolio. Focus on your projects while we handle the design and deployment.
+            <p className="text-xl md:text-3xl text-slate-400 font-medium leading-tight max-w-3xl mx-auto py-8">
+               High-performance portfolio architecture for the modern elite. Build in Studio, deploy to your own metal.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link href="/register">
-                <Button size="lg" className="h-12 px-8 bg-slate-900 text-white shadow-lg hover:bg-slate-800 dark:bg-slate-50 dark:text-slate-900">
-                  Build Your Portfolio <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="lg" className="h-12 px-8 border-slate-200 dark:border-slate-800">
-                  Explore Templates
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
+               <Link href="/templates">
+                 <Button size="lg" className="h-20 px-14 rounded-2xl bg-indigo-600 text-white text-xl font-black uppercase tracking-widest hover:shadow-[0_20px_40px_rgba(79,70,229,0.3)] transition-all group border-b-4 border-indigo-800">
+                    Enter Studio <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                 </Button>
+               </Link>
+               <Button size="lg" variant="outline" className="h-20 px-14 rounded-2xl border-2 border-white/10 text-xl font-bold hover:bg-white hover:text-black transition-all">
+                  Documentation
+               </Button>
             </div>
           </motion.div>
+          
+          {/* Decorative Elements */}
+          <div className="absolute top-1/2 left-0 w-64 h-[1px] bg-gradient-to-r from-transparent to-white/10" />
+          <div className="absolute top-1/2 right-0 w-64 h-[1px] bg-gradient-to-l from-transparent to-white/10" />
+        </section>
 
-          {/* Clean Mockup */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="mt-16 container mx-auto max-w-5xl px-4"
-          >
-            <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-              <div className="aspect-video w-full rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center border border-slate-100 dark:border-slate-800">
-                 <div className="flex flex-col items-center gap-3 text-slate-400">
-                    <Layout className="h-12 w-12 opacity-20" />
-                    <span className="text-sm font-medium uppercase tracking-widest opacity-50">Beautiful Minimalist Design</span>
+        {/* Dynamic Features Grid */}
+        <section id="features" className="py-40 relative">
+           <div className="container mx-auto px-8">
+              <div className="grid md:grid-cols-4 gap-1 border-t border-b border-white/5 bg-white/5">
+                 {[
+                   { icon: Terminal, title: "Zero Dependencies", desc: "Pure HTML/CSS/JS export. No bloat, just speed.", color: "indigo" },
+                   { icon: Cpu, title: "Anime.js Engine", desc: "Pre-configured motion systems in every template.", color: "purple" },
+                   { icon: Layers, title: "6 Architectures", desc: "Bento, HUD, Glass, and more unique structures.", color: "pink" },
+                   { icon: Grid, title: "Auto-Layout", desc: "Responsive by design, perfect on every screen.", color: "emerald" }
+                 ].map((feature, i) => (
+                   <motion.div 
+                     key={i}
+                     whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                     className="bg-[#080808] p-12 space-y-6 border-x border-white/5"
+                   >
+                      <feature.icon className={`h-10 w-10 text-${feature.color}-500`} />
+                      <h3 className="text-2xl font-bold uppercase tracking-tighter">{feature.title}</h3>
+                      <p className="text-slate-500 leading-relaxed text-sm">{feature.desc}</p>
+                   </motion.div>
+                 ))}
+              </div>
+           </div>
+        </section>
+
+        {/* Immersive Gallery Section */}
+        <section id="templates" className="py-40 bg-[#080808] relative overflow-hidden">
+           <div className="container mx-auto px-8">
+              <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-32">
+                 <div className="space-y-6">
+                    <h2 className="text-7xl font-black tracking-tighter leading-none uppercase italic">The Library.</h2>
+                    <p className="text-2xl text-slate-500 max-w-xl">Curated design systems for different professional identities.</p>
                  </div>
+                 <Link href="/templates">
+                   <Button variant="outline" className="h-16 px-10 rounded-full font-black uppercase tracking-widest text-[10px] border-white/10 hover:border-white transition-all">
+                     View All Systems
+                   </Button>
+                 </Link>
               </div>
-            </div>
-          </motion.div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+                 {[
+                   { name: "Cyber HUD", layout: "Dynamic HUD", color: "from-indigo-500/20" },
+                   { name: "Glass Studio", layout: "Blur Architect", color: "from-purple-500/20" },
+                   { name: "Bento Dashboard", layout: "Grid Master", color: "from-pink-500/20" },
+                   { name: "Aurora Liquid", layout: "Fluid Monolith", color: "from-emerald-500/20" },
+                   { name: "Neo Brutalist", layout: "Punk Zine", color: "from-orange-500/20" },
+                   { name: "Classic Minimal", layout: "Swiss Split", color: "from-slate-500/20" }
+                 ].map((tmpl, i) => (
+                   <motion.div 
+                     key={i}
+                     whileHover={{ y: -20 }}
+                     className="group aspect-[4/5] rounded-[3rem] bg-black border border-white/5 p-12 flex flex-col justify-between relative overflow-hidden"
+                   >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${tmpl.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
+                      <div className="space-y-2 relative z-10">
+                         <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-40">{tmpl.layout}</span>
+                         <h3 className="text-3xl font-black uppercase tracking-tighter">{tmpl.name}</h3>
+                      </div>
+                      <div className="h-1 bg-white/10 w-full relative z-10">
+                        <motion.div 
+                          className="h-full bg-white" 
+                          initial={{ width: 0 }}
+                          whileInView={{ width: "30%" }}
+                        />
+                      </div>
+                   </motion.div>
+                 ))}
+              </div>
+           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-24 bg-slate-50/50 dark:bg-slate-900/20">
-          <div className="container mx-auto px-4">
-            <div className="grid gap-12 md:grid-cols-3">
-              {[
-                {
-                  icon: <Rocket className="h-6 w-6" />,
-                  title: "Fast Setup",
-                  desc: "Go from zero to a live, professional portfolio in less than 5 minutes."
-                },
-                {
-                  icon: <ShieldCheck className="h-6 w-6" />,
-                  title: "Secure & Reliable",
-                  desc: "Your data is protected with industry-standard encryption and secure authentication."
-                },
-                {
-                  icon: <Globe2 className="h-6 w-6" />,
-                  title: "Unique URL",
-                  desc: "Get a personalized link to share with clients, recruiters, and the world."
-                }
-              ].map((feature, i) => (
-                <div key={i} className="flex flex-col items-center text-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-bold">{feature.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400">{feature.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-24">
-          <div className="container mx-auto px-4 max-w-4xl text-center">
-            <div className="rounded-3xl border border-slate-100 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-950 sm:p-16">
-              <h2 className="text-3xl font-bold sm:text-4xl">Ready to get started?</h2>
-              <p className="mt-4 text-lg text-slate-500">Create your account today and start building your dream portfolio.</p>
-              <div className="mt-8">
-                <Link href="/register">
-                  <Button size="lg" className="h-12 px-10 bg-indigo-600 text-white hover:bg-indigo-700">
-                    Join for Free
-                  </Button>
-                </Link>
+        {/* Final CTA */}
+        <section className="py-60 text-center relative">
+           <div className="container mx-auto px-8 space-y-12">
+              <h2 className="text-6xl md:text-[8rem] font-black tracking-tighter leading-none uppercase italic">Your legacy starts <br/> <span className="text-indigo-500">right here.</span></h2>
+              <p className="text-2xl text-slate-400 max-w-2xl mx-auto">Zero friction. Zero maintenance. 100% Ownership.</p>
+              <div className="pt-12">
+                 <Link href="/templates">
+                    <Button size="lg" className="h-24 px-20 rounded-full bg-white text-black text-2xl font-black uppercase tracking-widest hover:scale-105 hover:bg-indigo-500 hover:text-white transition-all">
+                       Initialize Build
+                    </Button>
+                 </Link>
               </div>
-            </div>
-          </div>
+           </div>
         </section>
       </main>
 
-      <footer className="border-t border-slate-100 py-12 dark:border-slate-800">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-sm font-bold text-slate-900 dark:text-white">Legacy</span>
-          <p className="text-sm text-slate-400">© 2026. Built for creators.</p>
-        </div>
+      <footer className="py-20 border-t border-white/5 text-center bg-black">
+         <div className="container mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8 opacity-30">
+            <div className="flex items-center gap-2">
+               <Logo className="h-5 w-5" />
+               <span className="text-xs font-bold uppercase tracking-widest">Legacy Studio</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest">© 2026 // ALL_SYSTEMS_OPERATIONAL</p>
+            <div className="flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+               <a>Github</a>
+               <a>Terms</a>
+            </div>
+         </div>
       </footer>
     </div>
   );

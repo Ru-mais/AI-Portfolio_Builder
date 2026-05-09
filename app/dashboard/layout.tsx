@@ -8,9 +8,9 @@ import {
   User, 
   Settings, 
   LogOut, 
-  Sparkles,
   ChevronRight
 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -59,9 +59,7 @@ export default function DashboardLayout({
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 lg:flex">
         <div className="flex h-16 items-center px-6">
           <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-50">
-              <Sparkles className="h-5 w-5 text-white dark:text-slate-900" />
-            </div>
+            <Logo className="h-8 w-8" />
             <span className="text-lg font-black uppercase tracking-tighter">Legacy</span>
           </Link>
         </div>
@@ -122,9 +120,7 @@ export default function DashboardLayout({
         {/* Mobile Header */}
         <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950 lg:hidden">
            <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-50">
-              <Sparkles className="h-5 w-5 text-white dark:text-slate-900" />
-            </div>
+            <Logo className="h-8 w-8" />
             <span className="text-lg font-black uppercase tracking-tighter">Legacy</span>
           </div>
           <Button variant="ghost" size="icon" onClick={() => signOut({ callbackUrl: "/" })}>

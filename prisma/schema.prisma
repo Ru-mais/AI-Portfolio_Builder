@@ -20,6 +20,11 @@ model User {
   image         String?
   username      String?   @unique
   phone         String?   @unique
+  jobTitle      String?
+  bio           String?   @db.Text
+  github        String?
+  linkedin      String?
+  twitter       String?
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -44,8 +49,14 @@ model Project {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum ExperienceType {
+  WORK
+  EDUCATION
+}
+
 model Experience {
   id          String   @id @default(cuid())
+  type        ExperienceType @default(WORK)
   company     String
   position    String
   startDate   DateTime

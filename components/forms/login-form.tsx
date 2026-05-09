@@ -133,6 +133,34 @@ export const LoginForm = () => {
             )}
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-slate-100 dark:border-slate-800" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-slate-500 dark:bg-slate-950">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            variant="outline"
+            type="button"
+            className="w-full border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900"
+            onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+          >
+            GitHub
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            className="w-full border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900"
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          >
+            Google
+          </Button>
+        </div>
       </CardContent>
       <CardFooter className="flex flex-wrap justify-center gap-1 text-center text-sm text-slate-500">
         <span>Don't have an account?</span>

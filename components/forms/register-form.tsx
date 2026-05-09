@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { RegisterSchema } from "@/utils/validations/auth";
 import * as z from "zod";
-import { Loader2, Mail, Lock, User, Phone, Sparkles } from "lucide-react";
+import { Loader2, Mail, Lock, User, Phone } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,8 +63,8 @@ export const RegisterForm = () => {
   return (
     <Card className="w-full max-w-md border-slate-100 shadow-2xl dark:border-slate-800 dark:bg-slate-950">
       <CardHeader className="space-y-1 text-center">
-        <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-50">
-          <Sparkles className="h-6 w-6 text-white dark:text-slate-900" />
+        <div className="mx-auto mb-2">
+          <Logo className="h-12 w-12" />
         </div>
         <CardTitle className="text-2xl font-bold tracking-tight">Create your account</CardTitle>
         <CardDescription className="text-slate-500 dark:text-slate-400">
