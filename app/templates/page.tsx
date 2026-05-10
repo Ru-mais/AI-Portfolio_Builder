@@ -90,7 +90,7 @@ export default function TemplatesPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500 overflow-x-hidden">
-      {/* Background decoration */}
+      {/* Background Ambience */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 right-0 h-[50%] w-[50%] rounded-full bg-indigo-600/5 blur-[150px]" />
         <div className="absolute bottom-0 left-0 h-[40%] w-[40%] rounded-full bg-purple-600/5 blur-[150px]" />
@@ -104,7 +104,7 @@ export default function TemplatesPage() {
               className="flex items-center gap-2 group text-xs font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity"
             >
               <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back</span>
+              <span>Back Home</span>
             </button>
             <div className="h-6 w-[1px] bg-white/10 hidden md:block" />
             <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function TemplatesPage() {
             </div>
           </div>
           <div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">
-            Version_4.0 // Build_Ready
+            Professional Design Templates
           </div>
         </div>
       </header>
@@ -121,12 +121,12 @@ export default function TemplatesPage() {
       <main className="container mx-auto px-8 py-24">
         <div className="max-w-4xl space-y-6 mb-24">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.3em]">
-             <Sparkles className="h-3 w-3" /> Select Your Architecture
+             <Sparkles className="h-3 w-3" /> Step 1: Select Architecture
           </div>
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none uppercase italic">Choose your <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Design System.</span></h1>
           <p className="text-xl text-slate-500 max-w-2xl font-medium leading-relaxed">
-            Every architecture is custom-engineered with Anime.js physics and zero dependencies. 
-            Select one to enter the Studio.
+            Every architecture is engineered for performance and compatibility. 
+            Select a design to start building in the Studio.
           </p>
         </div>
 
@@ -166,7 +166,7 @@ export default function TemplatesPage() {
                   </div>
                   <div className="h-[1px] bg-white/10 w-full" />
                   <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                    <span className="text-indigo-500">Select Architecture</span>
+                    <span className="text-indigo-500">Start Project</span>
                     <ArrowLeft className="h-4 w-4 rotate-180 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />
                   </div>
                 </div>
@@ -175,10 +175,6 @@ export default function TemplatesPage() {
           ))}
         </div>
       </main>
-
-      <footer className="py-20 border-t border-white/5 bg-black mt-20 text-center opacity-30">
-        <p className="text-[10px] font-bold uppercase tracking-widest">© 2026 // LEGACY_SYSTEM_INITIATED</p>
-      </footer>
     </div>
   );
 }

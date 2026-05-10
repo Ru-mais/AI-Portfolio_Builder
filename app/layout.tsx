@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/components/providers/auth-provider";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +28,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Syne:wght@400;700;800&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Press+Start+2P&family=Fraunces:opsz,wght@9..144,400;700;900&display=swap" rel="stylesheet" />
+      </head>
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
           {children}
-        </AuthProvider>
       </body>
     </html>
   );
