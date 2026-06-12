@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Legacy | Build Your Online Presence",
+  title: "Portfi | Build Your Online Presence",
   description: "A secure and scalable SaaS platform to build and publish your professional portfolio in minutes.",
 };
 
