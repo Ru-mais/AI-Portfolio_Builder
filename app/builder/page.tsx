@@ -14,7 +14,14 @@ import {
   Cpu,
   Upload,
   Trash2,
-  Plus
+  Plus,
+  FileDown,
+  Printer,
+  Download,
+  Loader2,
+  X,
+  Sparkles,
+  FileText
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,6 +29,7 @@ import { Logo } from "@/components/ui/logo";
 import { motion, AnimatePresence } from "framer-motion";
 import { saveAs } from "file-saver";
 import { generatePortfolioHTML, fonts } from "@/utils/template-generator";
+import { downloadDirectPDF, printPortfolioToPDF } from "@/utils/pdf-exporter";
 import { toast } from "sonner";
 import { animate, stagger } from "animejs";
 import PortfolioRenderer from "@/components/portfolio-renderer";
@@ -57,6 +65,9 @@ function BuilderContent() {
   
   const [previewScale, setPreviewScale] = useState(1);
   const [contentHeight, setContentHeight] = useState(0);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [skillInput, setSkillInput] = useState("");
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -128,7 +139,35 @@ function BuilderContent() {
     const content = generatePortfolioHTML(formData as any);
     const blob = new Blob([content], { type: "text/html;charset=utf-8" });
     saveAs(blob, `${formData.name.toLowerCase().replace(/ /g, "_")}_portfolio.html`);
-    toast.success("Portfolio downloaded successfully!");
+    toast.success("Portfolio HTML downloaded successfully!");
+  };
+
+  const handleDirectPDF = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      await downloadDirectPDF(contentRef.current, {
+        filename: formData.name,
+        templateId: formData.templateId,
+        primaryColor: formData.primaryColor,
+      });
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  const handlePrintPDF = () => {
+    printPortfolioToPDF(formData as any);
+  };
+
+  const handleAddSkill = () => {
+    const trimmed = skillInput.trim();
+    if (!trimmed) return;
+    if (formData.skills.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+      toast.error(`"${trimmed}" is already added.`);
+      return;
+    }
+    setFormData(prev => ({ ...prev, skills: [...prev.skills, trimmed] }));
+    setSkillInput("");
   };
 
   const updateArray = (field: 'education' | 'experiences' | 'projects', id: string, data: any) => {
@@ -162,12 +201,21 @@ function BuilderContent() {
                 </button>
              ))}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
              <Button 
-                className="bg-amber-500 text-black rounded-full px-6 font-bold shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:bg-amber-400 hover:scale-105 transition-all"
+                variant="outline"
+                className="rounded-full px-5 font-bold border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 hover:border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all flex items-center gap-2 text-xs h-10"
+                onClick={() => setShowExportModal(true)}
+             >
+                <FileDown className="h-3.5 w-3.5" />
+                <span>Export PDF</span>
+             </Button>
+             <Button 
+                className="bg-white text-black rounded-full px-5 font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-200 hover:scale-105 transition-all flex items-center gap-2 text-xs h-10"
                 onClick={handleDownload}
              >
-                Export HTML
+                <Code2 className="h-3.5 w-3.5" />
+                <span>Export HTML</span>
              </Button>
           </div>
         </div>
@@ -250,28 +298,109 @@ function BuilderContent() {
                   )}
 
                   {currentStep === 3 && (
-                    <div className="space-y-8 relative z-10 text-center">
-                       <h3 className="text-xl font-bold text-zinc-100">Skills & Technologies</h3>
-                       <div className="flex flex-wrap gap-3 justify-center max-w-2xl mx-auto">
-                          {formData.skills.map(s => (
-                            <div key={s} className="bg-white/5 border border-white/10 text-zinc-200 px-5 py-2 rounded-full group flex items-center gap-3 hover:bg-white/10 transition-colors">
-                               <span className="text-sm font-semibold">{s}</span>
-                               <button onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter(sk => sk !== s) }))}>
-                                  <Trash2 className="h-4 w-4 text-zinc-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                               </button>
-                            </div>
-                          ))}
+                    <div className="space-y-8 relative z-10">
+                      <div className="text-center space-y-2">
+                        <h3 className="text-xl font-bold text-zinc-100">Skills & Technologies</h3>
+                        <p className="text-xs text-zinc-400">
+                          Add the programming languages, frameworks, libraries, and developer tools you master.
+                        </p>
+                      </div>
+
+                      {/* Input row with explicit Add button */}
+                      <div className="flex flex-col sm:flex-row items-center gap-3 max-w-xl mx-auto w-full">
+                        <div className="relative flex-1 w-full">
                           <input 
+                            type="text"
+                            value={skillInput}
+                            onChange={(e) => setSkillInput(e.target.value)}
                             onKeyDown={(e) => { 
-                               if (e.key === 'Enter' && e.currentTarget.value) { 
-                                  setFormData(prev => ({ ...prev, skills: [...prev.skills, e.currentTarget.value] })); 
-                                  e.currentTarget.value = ''; 
-                               } 
+                              if (e.key === 'Enter') { 
+                                e.preventDefault();
+                                handleAddSkill();
+                              } 
                             }} 
-                            placeholder="Add Skill + Enter" 
-                            className="bg-[#030303] border border-white/10 px-5 py-2 rounded-full text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 text-zinc-100 min-w-[200px] text-center shadow-inner" 
+                            placeholder="e.g. TypeScript, React, Docker..." 
+                            className="w-full bg-[#030303] border border-white/10 px-5 py-3 rounded-full text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 text-zinc-100 shadow-inner transition-all placeholder:text-zinc-600" 
                           />
-                       </div>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={handleAddSkill}
+                          disabled={!skillInput.trim()}
+                          className="w-full sm:w-auto bg-amber-500 text-black hover:bg-amber-400 font-bold rounded-full px-6 h-11 text-xs shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.2)] disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span>Add Skill</span>
+                        </Button>
+                      </div>
+
+                      {/* Active skills count and chips list */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between max-w-2xl mx-auto px-2">
+                          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                            Active Skills ({formData.skills.length})
+                          </span>
+                          {formData.skills.length > 0 && (
+                            <button 
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, skills: [] }))}
+                              className="text-[11px] text-zinc-500 hover:text-red-400 transition-colors"
+                            >
+                              Clear all
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2.5 justify-center max-w-2xl mx-auto p-4 bg-[#030303]/60 rounded-2xl border border-white/5 min-h-[80px] items-center">
+                          {formData.skills.length === 0 ? (
+                            <span className="text-xs text-zinc-600 italic">No skills added yet. Type a skill above and click Add!</span>
+                          ) : (
+                            formData.skills.map(s => (
+                              <div 
+                                key={s} 
+                                className="bg-white/5 border border-white/10 text-zinc-200 pl-4 pr-2.5 py-1.5 rounded-full flex items-center gap-2 hover:border-amber-500/40 hover:bg-white/10 transition-all group"
+                              >
+                                <span className="text-xs font-semibold">{s}</span>
+                                <button 
+                                  type="button"
+                                  title={`Remove ${s}`}
+                                  onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter(sk => sk !== s) }))}
+                                  className="w-5 h-5 rounded-full flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Suggested Skills Chips */}
+                      <div className="space-y-2 pt-2 max-w-2xl mx-auto">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-600 block text-center">
+                          Quick Suggestions (Click to add)
+                        </span>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {[
+                            "TypeScript", "React", "Next.js", "Node.js", "Python", 
+                            "Docker", "Tailwind CSS", "PostgreSQL", "AWS", "GraphQL", 
+                            "Figma", "Git", "Kubernetes", "MongoDB"
+                          ]
+                            .filter(suggested => !formData.skills.some(s => s.toLowerCase() === suggested.toLowerCase()))
+                            .slice(0, 8)
+                            .map(suggested => (
+                              <button
+                                key={suggested}
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, skills: [...prev.skills, suggested] }))}
+                                className="text-[11px] font-medium bg-white/5 hover:bg-amber-500/10 border border-white/5 hover:border-amber-500/30 text-zinc-400 hover:text-amber-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 cursor-pointer"
+                              >
+                                <Plus className="h-3 w-3" />
+                                {suggested}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -429,10 +558,10 @@ function BuilderContent() {
                  </div>
               </div>
 
-              <div className="absolute inset-0 pt-12 overflow-y-auto no-scrollbar scroll-smooth bg-[#050505]">
+               <div className="absolute inset-0 pt-12 overflow-y-auto no-scrollbar scroll-smooth bg-[#050505]">
                  <div 
                     ref={contentRef}
-                    className="w-[1440px] origin-top-left min-h-full bg-white" 
+                    className={`w-[1440px] origin-top-left min-h-full ${formData.templateId === 'neo' ? 'bg-white text-black' : 'bg-[#050505] text-white'}`}
                     style={{ transform: `scale(${previewScale})`, height: contentHeight }}
                  >
                     <PortfolioRenderer user={{ ...formData, themeSettings: { layout: formData.templateId, primaryColor: formData.primaryColor, fontFamily: formData.fontId } } as any} />
@@ -456,10 +585,15 @@ function BuilderContent() {
            </button>
            
            <Button 
-              className="rounded-full h-12 px-10 font-bold text-sm bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:bg-zinc-200 hover:scale-105 transition-all duration-300" 
-              onClick={() => { if (currentStep < steps.length - 1) { setCurrentStep(prev => prev + 1); } else { handleDownload(); } }}
+              className="rounded-full h-12 px-8 font-bold text-sm bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:bg-zinc-200 hover:scale-105 transition-all duration-300 flex items-center gap-2" 
+              onClick={() => { if (currentStep < steps.length - 1) { setCurrentStep(prev => prev + 1); } else { setShowExportModal(true); } }}
            >
-              {currentStep === steps.length - 1 ? "Export Source Code" : "Continue"}
+              {currentStep === steps.length - 1 ? (
+                <>
+                  <Sparkles className="h-4 w-4 text-amber-500" />
+                  <span>Export Portfolio</span>
+                </>
+              ) : "Continue"}
            </Button>
            
            <button 
@@ -470,6 +604,169 @@ function BuilderContent() {
              <ArrowRight className="h-5 w-5" />
            </button>
         </div>
+
+        {/* EXPORT MODAL */}
+        <AnimatePresence>
+          {showExportModal && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+              onClick={() => setShowExportModal(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0, y: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 15 }}
+                transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-[0_25px_80px_rgba(0,0,0,0.95)] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Glow ambient background decoration */}
+                <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-amber-500/10 via-amber-500/5 to-transparent rounded-full pointer-events-none -mr-20 -mt-20 blur-2xl" />
+
+                {/* Header */}
+                <div className="flex items-start justify-between relative z-10 mb-8">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3" />
+                        Export Suite
+                      </span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                      Export Your Portfolio
+                    </h2>
+                    <p className="text-xs md:text-sm text-zinc-400 mt-1">
+                      Select your preferred document or publishing format.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setShowExportModal(false)}
+                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Export Options Grid */}
+                <div className="grid gap-3 relative z-10">
+                  {/* Option 1: Direct PDF Download */}
+                  <div className="p-5 bg-[#030303] border border-white/5 hover:border-amber-500/30 rounded-2xl transition-all group">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                          <FileDown className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm md:text-base font-bold text-white group-hover:text-amber-300 transition-colors">
+                              Direct PDF Download
+                            </h3>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/20">
+                              1-Click .PDF
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                            Captures and slices the entire portfolio into a multi-page A4 PDF file downloaded directly to your device.
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        disabled={isGeneratingPdf}
+                        onClick={handleDirectPDF}
+                        className="bg-amber-500 text-black hover:bg-amber-400 font-bold rounded-xl px-5 text-xs h-10 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.2)] disabled:opacity-50"
+                      >
+                        {isGeneratingPdf ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-3.5 h-3.5 mr-2" />
+                            Download PDF
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Option 2: High-Fidelity Print-to-PDF */}
+                  <div className="p-5 bg-[#030303] border border-white/5 hover:border-blue-500/30 rounded-2xl transition-all group">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                          <Printer className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm md:text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                              Vector Print-to-PDF
+                            </h3>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/20">
+                              Vector Sharp
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                            Native browser print engine with razor-sharp vector text, selectable fonts, active hyperlinks, and clean section breaks.
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handlePrintPDF}
+                        variant="outline"
+                        className="border-white/10 hover:border-blue-500/40 text-white hover:text-blue-300 bg-white/5 hover:bg-blue-500/10 font-bold rounded-xl px-5 text-xs h-10 shrink-0"
+                      >
+                        <Printer className="w-3.5 h-3.5 mr-2" />
+                        Print Preview
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Option 3: Standalone HTML */}
+                  <div className="p-5 bg-[#030303] border border-white/5 hover:border-emerald-500/30 rounded-2xl transition-all group">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                          <Code2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm md:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                              Standalone HTML Website
+                            </h3>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                              Deploy Anywhere
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                            Self-contained single-file HTML code with embedded Three.js 3D particles and responsive animations ready to host.
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handleDownload}
+                        variant="outline"
+                        className="border-white/10 hover:border-emerald-500/40 text-white hover:text-emerald-300 bg-white/5 hover:bg-emerald-500/10 font-bold rounded-xl px-5 text-xs h-10 shrink-0"
+                      >
+                        <Download className="w-3.5 h-3.5 mr-2" />
+                        Download HTML
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer info */}
+                <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-500">
+                  <span>Client-side rendered • 100% private</span>
+                  <span className="text-zinc-400">Template: <strong className="text-zinc-200 capitalize">{formData.templateId}</strong></span>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

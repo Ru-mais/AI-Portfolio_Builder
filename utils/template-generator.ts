@@ -85,6 +85,41 @@ export function generatePortfolioHTML(formData: FormData) {
         .neo-border { border: 12px solid #000; }
         .cyber-grid { background-image: radial-gradient(${color}22 1px, transparent 1px); background-size: 40px 40px; }
         .break-words { overflow-wrap: break-word; word-break: break-word; }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 12mm 15mm;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            html, body {
+                background-color: ${formData.templateId === 'neo' ? '#ffffff' : '#050505'} !important;
+                color: ${formData.templateId === 'neo' ? '#000000' : '#ffffff'} !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            #canvas-container, .no-print {
+                display: none !important;
+            }
+            .stagger-item {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+                transition: none !important;
+                animation: none !important;
+            }
+            section, .glass, .neo-border, article, [class*="stagger-item"] {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            a {
+                text-decoration: none !important;
+            }
+        }
     </style>
   `;
 
@@ -349,5 +384,14 @@ export function generatePortfolioHTML(formData: FormData) {
     document.querySelectorAll('.stagger-item').forEach(el => observer.observe(el));
   `;
 
-  return `<!DOCTYPE html><html lang="en"><head>${baseHead} <style>.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style></head><body>${content}<script>window.onload = () => { ${commonThree} ${animeScript} };</script></body></html>`;
+  const floatingPrintButton = `
+    <div class="no-print fixed bottom-6 right-6 z-50">
+      <button onclick="window.print()" title="Print / Save as PDF" style="background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; padding: 12px 20px; border-radius: 9999px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.6); transition: all 0.2s ease;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        <span>Save as PDF</span>
+      </button>
+    </div>
+  `;
+
+  return `<!DOCTYPE html><html lang="en"><head>${baseHead} <style>.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style></head><body>${content}${floatingPrintButton}<script>window.onload = () => { ${commonThree} ${animeScript} };</script></body></html>`;
 }
